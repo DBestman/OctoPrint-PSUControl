@@ -720,7 +720,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         self.enablePowerOffWarningDialog = self._settings.get_boolean(["enablePowerOffWarningDialog"])
         self._idleIgnoreCommandsArray = self.idleIgnoreCommands.split(',')
         self.idleTimeoutWaitTemp = self._settings.get_int(["idleTimeoutWaitTemp"])
-        self.enablePowerOnAtRestart = self._settings.get_int(["enablePowerOnAtRestart"])
+        self.enablePowerOnAtRestart = self._settings.get_boolean(["enablePowerOnAtRestart"])
 
 
         #GCode switching and PseudoOnOff are not compatible.
