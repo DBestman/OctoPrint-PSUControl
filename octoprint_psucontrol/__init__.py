@@ -248,7 +248,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
             
         if self.switchingMethod == 'GPIO' or self.sensingMethod == 'GPIO':
             self._configure_gpio()
-        if self.switchingMethod == 'SYSTEM' && self.sensingMethod == 'INTERNAL' && self._noSensing_isPSUOn:
+        if self.switchingMethod == 'SYSTEM' and self.sensingMethod == 'INTERNAL' and self._noSensing_isPSUOn:
             turn_psu_on()
 
         self._check_psu_state_thread = threading.Thread(target=self._check_psu_state)
