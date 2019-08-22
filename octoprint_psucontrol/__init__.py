@@ -672,7 +672,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
             powerOffWhenIdle = False,
             idleTimeout = 30,
             idleIgnoreCommands = 'M105',
-            idleTimeoutWaitTemp = 50
+            idleTimeoutWaitTemp = 50,
             enablePowerOnAtRestart = False
 
         )
