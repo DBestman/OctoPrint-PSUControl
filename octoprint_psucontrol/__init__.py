@@ -125,6 +125,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         self._waitForHeaters = False
         self._skipIdleTimer = False
         self._configuredGPIOPins = []
+        self.enablePowerOnAtRestart = False
 
 
     def on_settings_initialized(self):
@@ -223,6 +224,13 @@ class PSUControl(octoprint.plugin.StartupPlugin,
 
         self.idleTimeoutWaitTemp = self._settings.get_int(["idleTimeoutWaitTemp"])
         self._logger.debug("idleTimeoutWaitTemp: %s" % self.idleTimeoutWaitTemp)
+
+        self.enablePowerOnAtRestart = self._settings.get_boolean(["enablePowerOnAtRestart"])
+        self._logger.debug("enablePowerOnAtRestart: %s" % self.enablePowerOnAtRestart)
+        if self.enablePowerOnAtRestart:
+            self.isPSUOn = True
+            self._noSensing_isPSUOn = True
+
 
         if self.switchingMethod == 'GCODE':
             self._logger.info("Using G-Code Commands for On/Off")
@@ -665,6 +673,8 @@ class PSUControl(octoprint.plugin.StartupPlugin,
             idleTimeout = 30,
             idleIgnoreCommands = 'M105',
             idleTimeoutWaitTemp = 50
+            enablePowerOnAtRestart = False
+
         )
 
     def on_settings_save(self, data):
@@ -710,6 +720,8 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         self.enablePowerOffWarningDialog = self._settings.get_boolean(["enablePowerOffWarningDialog"])
         self._idleIgnoreCommandsArray = self.idleIgnoreCommands.split(',')
         self.idleTimeoutWaitTemp = self._settings.get_int(["idleTimeoutWaitTemp"])
+        self.enablePowerOnAtRestart = self._settings.get_int(["enablePowerOnAtRestart"])
+
 
         #GCode switching and PseudoOnOff are not compatible.
         if self.switchingMethod == 'GCODE' and self.enablePseudoOnOff:

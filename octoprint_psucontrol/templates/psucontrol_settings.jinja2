@@ -6,6 +6,11 @@
             <input type="checkbox" data-bind="checked: settings.plugins.psucontrol.enablePowerOffWarningDialog"> Show warning dialog when powering off via toggle button.
             </label>
         </div>
+        <div class="controls">
+            <label class="checkbox">
+            <input type="checkbox" data-bind="checked: settings.plugins.psucontrol.enablePowerOnAtRestart"> Initial state ON after restart.
+            </label>
+        </div>
     </div>
     <!-- ko if: hasGPIO() && (settings.plugins.psucontrol.switchingMethod() === "GPIO" || settings.plugins.psucontrol.sensingMethod() === "GPIO") -->
     <div class="control-group">
