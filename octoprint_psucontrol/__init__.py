@@ -228,7 +228,6 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         self.enablePowerOnAtRestart = self._settings.get_boolean(["enablePowerOnAtRestart"])
         self._logger.debug("enablePowerOnAtRestart: %s" % self.enablePowerOnAtRestart)
         if self.enablePowerOnAtRestart:
-            self.isPSUOn = True
             self._noSensing_isPSUOn = True
 
 
@@ -248,8 +247,6 @@ class PSUControl(octoprint.plugin.StartupPlugin,
             
         if self.switchingMethod == 'GPIO' or self.sensingMethod == 'GPIO':
             self._configure_gpio()
-        if self.switchingMethod == 'SYSTEM' and self.sensingMethod == 'INTERNAL' and self._noSensing_isPSUOn:
-            turn_psu_on()
 
         self._check_psu_state_thread = threading.Thread(target=self._check_psu_state)
         self._check_psu_state_thread.daemon = True
