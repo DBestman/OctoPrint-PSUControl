@@ -113,6 +113,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         self.autoConnectBaudrate = ''
         self.autoConnectPrinterProfile = ''
         self.sensingMethod = ''
+        self.sensePollingInterval = 0
         self.senseGPIOPin = 0
         self.invertsenseGPIOPin = False
         self.senseGPIOPinPUD = ''
@@ -188,6 +189,9 @@ class PSUControl(octoprint.plugin.StartupPlugin,
 
         self.sensingMethod = self._settings.get(["sensingMethod"])
         self._logger.debug("sensingMethod: %s" % self.sensingMethod)
+
+        self.sensePollingInterval = self._settings.get_int(["sensePollingInterval"])
+        self._logger.debug("sensePollingInterval: %s" % self.sensePollingInterval)
 
         self.senseGPIOPin = self._settings.get_int(["senseGPIOPin"])
         self._logger.debug("senseGPIOPin: %s" % self.senseGPIOPin)
@@ -393,7 +397,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
 
             self._plugin_manager.send_plugin_message(self._identifier, dict(hasGPIO=self._hasGPIO, isPSUOn=self.isPSUOn))
 
-            self._check_psu_state_event.wait(5)
+            self._check_psu_state_event.wait(self.sensePollingInterval)
             self._check_psu_state_event.clear()
 
     def _start_idle_timer(self):
@@ -617,6 +621,9 @@ class PSUControl(octoprint.plugin.StartupPlugin,
             getPSUState=[]
         )
 
+    def on_api_get(self, request):
+        return self.on_api_command("getPSUState", [])
+
     def on_api_command(self, command, data):
         if not user_permission.can():
             return make_response("Insufficient rights", 403)
@@ -655,6 +662,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
             autoConnectPrinterProfile = '',
             sensingMethod = 'INTERNAL',
             senseGPIOPin = 0,
+            sensePollingInterval = 5,
             invertsenseGPIOPin = False,
             senseGPIOPinPUD = '',
             senseSystemCommand = '',
@@ -698,6 +706,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         self.autoConnectPrinterProfile = self._settings.get(["autoConnectPrinterProfile"])
         self.sensingMethod = self._settings.get(["sensingMethod"])
         self.senseGPIOPin = self._settings.get_int(["senseGPIOPin"])
+        self.sensePollingInterval = self._settings.get_int(["sensePollingInterval"])
         self.invertsenseGPIOPin = self._settings.get_boolean(["invertsenseGPIOPin"])
         self.senseGPIOPinPUD = self._settings.get(["senseGPIOPinPUD"])
         self.senseSystemCommand = self._settings.get(["senseSystemCommand"])
@@ -734,7 +743,10 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         return 3
 
     def on_settings_migrate(self, target, current=None):
-        if current is None or current < 2:
+        if current is None:
+            current = 0
+
+        if current < 2:
             # v2 changes names of settings variables to accomidate system commands.
             cur_switchingMethod = self._settings.get(["switchingMethod"])
             if cur_switchingMethod is not None and cur_switchingMethod == "COMMAND":
@@ -798,6 +810,7 @@ class PSUControl(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "PSU Control"
+__plugin_pythoncompat__ = ">=2.7,<4"
 
 def __plugin_load__():
     global __plugin_implementation__
